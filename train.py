@@ -90,9 +90,9 @@ model = getModel(input_shape, out_dim)
 optimizer = RMSprop(lr=lr, rho=0.9, epsilon=1e-8)# 用RMSprop算法进行优化，加快收敛速度
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
-checkpoints_path = os.path.join(output_folder, 'checkpoints')# 创建checkpoints路径
+checkpoints_path = os.path.join(output_folder, 'checkpoints')# 创建模型保存路径
 
-tb = TensorBoard(log_dir=os.path.join(output_folder, 'logs', 'SincNet'))
+tb = TensorBoard(log_dir=os.path.join(output_folder, 'logs', 'SincNet'))# 模型可视化
 checkpointer = ModelCheckpoint(
     filepath=os.path.join(checkpoints_path, 'SincNet.hdf5'),
     verbose=1,
