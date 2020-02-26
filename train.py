@@ -15,7 +15,7 @@ import gc
 from tqdm import tqdm
 from keras.layers import MaxPooling1D, Conv1D, LeakyReLU, BatchNormalization, Dense, Flatten
 
-K.clear_session()
+K.clear_session()#清除会话将删除以前模型遗留的所有节点，释放内存并防止减速
 from test import Validation
 
 
@@ -77,20 +77,20 @@ import numpy as np
 import sincnet
 from keras.layers import Dense, Dropout, Activation
 
-print('N_filt ' + str(cnn_N_filt))
-print('N_filt len ' + str(cnn_len_filt))
-print('FS ' + str(fs))
-print('WLEN ' + str(wlen))
+print('N_filt ' + str(cnn_N_filt))# 打印卷积层中过滤器数量
+print('N_filt len ' + str(cnn_len_filt))# 打印卷积层中过滤器长度
+print('FS ' + str(fs))# 打印频率？
+print('WLEN ' + str(wlen))# 打印序列长度？
 
-input_shape = (wlen, 1)
+input_shape = (wlen, 1)# 输入格式为wlen x 1
 out_dim = class_lay[0]
 from model import getModel
 
 model = getModel(input_shape, out_dim)
-optimizer = RMSprop(lr=lr, rho=0.9, epsilon=1e-8)
+optimizer = RMSprop(lr=lr, rho=0.9, epsilon=1e-8)# 用RMSprop算法进行优化，加快收敛速度
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
-checkpoints_path = os.path.join(output_folder, 'checkpoints')
+checkpoints_path = os.path.join(output_folder, 'checkpoints')# 创建checkpoints路径
 
 tb = TensorBoard(log_dir=os.path.join(output_folder, 'logs', 'SincNet'))
 checkpointer = ModelCheckpoint(
