@@ -25,7 +25,7 @@ def ReadList(list_file):  # list_file是一个写着要用哪些wav文件的一�
     lines = f.readlines()
     list_sig = []
     for x in lines:
-        list_sig.append(x.rstrip())
+        list_sig.append(x.rstrip())#删除空格
     f.close()
     return list_sig  # 返回一个list
 
@@ -39,15 +39,15 @@ def ig_f(dir, files):
     return [f for f in files if os.path.isfile(os.path.join(dir, f))]
 
 
-in_folder = sys.argv[1]  # TIMIT数据集文件夹
-out_folder = sys.argv[2]  # 复制后的文件夹，开始的时候先别创建，代码会自己创建
-list_file = sys.argv[3]  # 那个列表文件
+in_folder = sys.argv[1]  # TIMIT数据集文件夹，命令中对应$TIMIT_FOLDER
+out_folder = sys.argv[2]  # 复制后的文件夹，开始的时候先别创建，代码会自己创建，命令中对应$OUTPUT_FOLDER
+list_file = sys.argv[3]  # 那个列表文件，命令中对应data_lists/TIMIT_all.scp
 
 # Read List file
 list_sig = ReadList(list_file)  # wav文件list
 
 # Replicate input folder structure to output folder
-copy_folder(in_folder, out_folder)
+copy_folder(in_folder, out_folder)  # 将in_folder中的文件夹结构完全复制到out_folder
 
 # Speech Data Reverberation Loop
 for i in range(len(list_sig)):  # 循环对wav文件处理
