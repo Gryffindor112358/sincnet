@@ -79,8 +79,8 @@ from keras.layers import Dense, Dropout, Activation
 
 print('N_filt ' + str(cnn_N_filt))# 打印卷积层中过滤器数量
 print('N_filt len ' + str(cnn_len_filt))# 打印卷积层中过滤器长度
-print('FS ' + str(fs))# 打印频率？
-print('WLEN ' + str(wlen))# 打印序列长度？
+print('FS ' + str(fs))# 打印频率？  回复：通篇代码里的fs应该是采样频率
+print('WLEN ' + str(wlen))# 打印序列长度？  回复：这个是窗的长度，汉明窗啥的，具体不知道怎么起的作用
 
 input_shape = (wlen, 1)# 输入格式为wlen x 1
 out_dim = class_lay[0]
