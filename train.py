@@ -15,7 +15,7 @@ import gc
 from tqdm import tqdm
 from keras.layers import MaxPooling1D, Conv1D, LeakyReLU, BatchNormalization, Dense, Flatten
 
-K.clear_session()#清除会话将删除以前模型遗留的所有节点，释放内存并防止减速
+K.clear_session()  # 清除会话将删除以前模型遗留的所有节点，释放内存并防止减速
 from test import Validation
 
 
@@ -38,7 +38,7 @@ def create_batches_rnd(batch_size, data_folder, wav_lst, N_snt, wlen, lab_dict, 
         # signal=signal.astype(float)/32768
         [signal, fs] = sf.read(data_folder + wav_lst[snt_id_arr[i]])
         # accesing to a random chunk
-        snt_len = signal.shape[0]   # signal中储存着怎样的信息，形式又是什么样的呢？
+        snt_len = signal.shape[0]  # signal中储存着怎样的信息，形式又是什么样的呢？
         snt_beg = np.random.randint(snt_len - wlen - 1)  # randint(0, snt_len-2*wlen-1)
         snt_end = snt_beg + wlen
         sig_batch[i, :] = signal[snt_beg:snt_end] * rand_amp_arr[i]
@@ -77,22 +77,22 @@ import numpy as np
 import sincnet
 from keras.layers import Dense, Dropout, Activation
 
-print('N_filt ' + str(cnn_N_filt))# 打印卷积层中过滤器数量
-print('N_filt len ' + str(cnn_len_filt))# 打印卷积层中过滤器长度
-print('FS ' + str(fs))# 打印频率？  回复：通篇代码里的fs应该是采样频率
-print('WLEN ' + str(wlen))# 打印序列长度？  回复：这个是窗的长度，汉明窗啥的，具体不知道怎么起的作用
+print('N_filt ' + str(cnn_N_filt))  # 打印卷积层中过滤器数量
+print('N_filt len ' + str(cnn_len_filt))  # 打印卷积层中过滤器长度
+print('FS ' + str(fs))  # 打印频率？  回复：通篇代码里的fs应该是采样频率
+print('WLEN ' + str(wlen))  # 打印序列长度？  回复：这个是窗的长度，汉明窗啥的，具体不知道怎么起的作用
 
-input_shape = (wlen, 1)# 输入格式为wlen x 1
+input_shape = (wlen, 1)  # 输入格式为wlen x 1
 out_dim = class_lay[0]
 from model import getModel
 
 model = getModel(input_shape, out_dim)
-optimizer = RMSprop(lr=lr, rho=0.9, epsilon=1e-8)# 用RMSprop算法进行优化，加快收敛速度
+optimizer = RMSprop(lr=lr, rho=0.9, epsilon=1e-8)  # 用RMSprop算法进行优化，加快收敛速度
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
-checkpoints_path = os.path.join(output_folder, 'checkpoints')# 创建模型保存路径
+checkpoints_path = os.path.join(output_folder, 'checkpoints')  # 创建模型保存路径
 
-tb = TensorBoard(log_dir=os.path.join(output_folder, 'logs', 'SincNet'))# 模型可视化
+tb = TensorBoard(log_dir=os.path.join(output_folder, 'logs', 'SincNet'))  # 模型可视化
 checkpointer = ModelCheckpoint(
     filepath=os.path.join(checkpoints_path, 'SincNet.hdf5'),
     verbose=1,
@@ -105,7 +105,7 @@ validation = ValidationCallback(Batch_dev, data_folder, lab_dict, wav_lst_te, wl
 callbacks = [tb, checkpointer, validation]
 
 if pt_file != 'none':
-    model.load_weights(pt_file)
+    model.load_weights(pt_file) # 事先安排好的权重文件？
 
 train_generator = batchGenerator(batch_size, data_folder, wav_lst_tr, snt_tr, wlen, lab_dict, 0.2, out_dim)
 model.fit_generator(train_generator, steps_per_epoch=N_batches, epochs=N_epochs, verbose=1, callbacks=callbacks)
