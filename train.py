@@ -38,7 +38,7 @@ def create_batches_rnd(batch_size, data_folder, wav_lst, N_snt, wlen, lab_dict, 
         # signal=signal.astype(float)/32768
         [signal, fs] = sf.read(data_folder + wav_lst[snt_id_arr[i]])
         # accesing to a random chunk
-        snt_len = signal.shape[0]  # signal中储存着怎样的信息，形式又是什么样的呢？
+        snt_len = signal.shape[0]  # signal中储存着怎样的信息，形式又是什么样的呢? 回复：TIMIT中直接读出来的signal的话是长为46797的一维数组
         snt_beg = np.random.randint(snt_len - wlen - 1)  # randint(0, snt_len-2*wlen-1)
         snt_end = snt_beg + wlen
         sig_batch[i, :] = signal[snt_beg:snt_end] * rand_amp_arr[i]
