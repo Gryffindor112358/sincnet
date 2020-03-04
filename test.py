@@ -41,42 +41,42 @@ class Validation():
                 print('WLEN: ' + str(wlen))
                 print('WSHIFT: ' + str(wshift))
                 pbar = tqdm(total=snt_te)
-            for i in range(snt_te):
+            for i in range(snt_te):    # 从这里开始大循环，一次处理一个音频文件
                 [signal, fs] = sf.read(data_folder + wav_lst_te[i])
 
                 signal = np.array(signal)
                 lab_batch = lab_dict[wav_lst_te[i]]
 
-                # split signals into chunck
+                # split signals into chunck   将信号分成小块，每块的长度就是窗的长度
                 beg_samp = 0
                 end_samp = wlen
 
-                N_fr = int((signal.shape[0] - wlen) / (wshift))  # 信号的长度减去窗的长度，除以窗移动的长度，推测是对一个信号采样的数量
+                N_fr = int((signal.shape[0] - wlen) / (wshift))  # 信号的长度减去窗的长度，除以窗移动的长度，就是分块的数量
 
-                sig_arr = np.zeros([Batch_dev, wlen])
+                sig_arr = np.zeros([Batch_dev, wlen])  # sig_arr一个二维数组，行数为Batch_dev(这个东西的意义还不明确)，宽度为窗的长度
 
                 lab = np.zeros(N_fr + 1) + lab_batch
-                pout = np.zeros(shape=(N_fr + 1, class_lay[-1]))  # 这里创建了一个二维的空列表，行数就是对信号采了多少段
-                count_fr = 0
-                count_fr_tot = 0
+                pout = np.zeros(shape=(N_fr + 1, class_lay[-1]))  # 这里创建了一个二维的空列表，行数就是对信号采了多少段, 宽度是标签的种类
+                count_fr = 0  # 每一个Batch_fr中第几块音频
+                count_fr_tot = 0  # 总共处理了多少块音频
 
-                while end_samp < signal.shape[0]:  # for each chunck
-                    sig_arr[count_fr, :] = signal[beg_samp:end_samp]
-                    beg_samp = beg_samp + wshift
-                    end_samp = beg_samp + wlen
-                    count_fr = count_fr + 1
-                    count_fr_tot = count_fr_tot + 1
-                    if count_fr == Batch_dev:
+                while end_samp < signal.shape[0]:  # for each chunck  每一块都要进行如下操作
+                    sig_arr[count_fr, :] = signal[beg_samp:end_samp]  # 往sig_arr中装Batch_fr块音频
+                    beg_samp = beg_samp + wshift   # 下一块的起点
+                    end_samp = beg_samp + wlen     # 下一块的终点
+                    count_fr = count_fr + 1        # 本Batch_fr块数+1
+                    count_fr_tot = count_fr_tot + 1   # 总的块数+1
+                    if count_fr == Batch_dev:      # 装满Batch_fr块之后，进行一次预测操作，推测是要有这么多音频才能进行一次预测
                         a, b = np.shape(sig_arr)
                         inp = sig_arr.reshape(a, b, 1)
                         inp = np.array(inp)
                         pout[count_fr_tot - Batch_dev:count_fr_tot, :] = self.model.predict(inp,
-                                                                                            verbose=0)  # 每一段信号都给出个预测结果
+                                                                                            verbose=0) # 得出预测结果，每一块音频都有一个结果
 
-                        count_fr = 0
-                        sig_arr = np.zeros([Batch_dev, wlen])
+                        count_fr = 0   # 块数归零
+                        sig_arr = np.zeros([Batch_dev, wlen])  # sig_arr归零，进行下一次装填和预测
 
-                # Add the last items left
+                # Add the last items left   # 如果还有剩下的，一并预测
                 if count_fr > 0:
                     inp = sig_arr[0:count_fr]
                     a, b = np.shape(inp)
@@ -85,11 +85,11 @@ class Validation():
                     pout[count_fr_tot - count_fr:count_fr_tot, :] = self.model.predict(inp, verbose=0)
 
                 # Prediction for each chunkc  and calculation of average error
-                pred = np.argmax(pout, axis=1)   # 把一个信号每一段的预测结果去一个argmax的作为最终预测结果
-                err = np.mean(pred != lab)
+                pred = np.argmax(pout, axis=1)   # 在预测结果中，每一列找一个最大值，取出这个最大值的行数。理解上来说好像是找出最可能是
+                err = np.mean(pred != lab)                                           # 某个标签的那段音频
 
                 # Calculate accuracy on the whole sentence
-                best_class = np.argmax(np.sum(pout, axis=0))
+                best_class = np.argmax(np.sum(pout, axis=0))   # 把每一列的预测值都加起来，成为一个一维数组，然后找出最大值的索引，也就是第几个标签
 
                 err_sum_snt = err_sum_snt + float((best_class != lab[0]))
                 err_sum = err_sum + err
