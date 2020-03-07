@@ -28,7 +28,7 @@ def batchGenerator(batch_size, data_folder, wav_lst, N_snt, wlen, lab_dict, fact
 
 def create_batches_rnd(batch_size, data_folder, wav_lst, N_snt, wlen, lab_dict, fact_amp, out_dim):
     # Initialization of the minibatch (batch_size,[0=>x_t,1=>x_t+N,1=>random_samp])
-    sig_batch = np.zeros([batch_size, wlen])
+    sig_batch = np.zeros([batch_size, wlen])     # 二维数组，行数是每一个batch要装的信号段数
     lab_batch = []
     snt_id_arr = np.random.randint(N_snt, size=batch_size)
     rand_amp_arr = np.random.uniform(1.0 - fact_amp, 1 + fact_amp, batch_size)
@@ -42,7 +42,7 @@ def create_batches_rnd(batch_size, data_folder, wav_lst, N_snt, wlen, lab_dict, 
         snt_beg = np.random.randint(snt_len - wlen - 1)  # randint(0, snt_len-2*wlen-1)
         snt_end = snt_beg + wlen
         sig_batch[i, :] = signal[snt_beg:snt_end] * rand_amp_arr[i]
-        y = lab_dict[wav_lst[snt_id_arr[i]]]
+        y = lab_dict[wav_lst[snt_id_arr[i]]]    # lab_dict是在conf里面由一个文件传过来的数据
         yt = to_categorical(y, num_classes=out_dim)
         lab_batch.append(yt)
     a, b = np.shape(sig_batch)
@@ -88,7 +88,7 @@ from model import getModel
 
 model = getModel(input_shape, out_dim)
 optimizer = RMSprop(lr=lr, rho=0.9, epsilon=1e-8)  # 用RMSprop算法进行优化，加快收敛速度
-model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])   # 给模型设置一些参数
 
 checkpoints_path = os.path.join(output_folder, 'checkpoints')  # 创建模型保存路径
 
@@ -105,7 +105,7 @@ validation = ValidationCallback(Batch_dev, data_folder, lab_dict, wav_lst_te, wl
 callbacks = [tb, checkpointer, validation]
 
 if pt_file != 'none':
-    model.load_weights(pt_file) # 事先安排好的权重文件？
+    model.load_weights(pt_file) # 事先安排好的权重文件？  回复：这也是想lab_dict一样源头是data_io中读取的，但还不知道是怎么读的
 
-train_generator = batchGenerator(batch_size, data_folder, wav_lst_tr, snt_tr, wlen, lab_dict, 0.2, out_dim)
-model.fit_generator(train_generator, steps_per_epoch=N_batches, epochs=N_epochs, verbose=1, callbacks=callbacks)
+train_generator = batchGenerator(batch_size, data_folder, wav_lst_tr, snt_tr, wlen, lab_dict, 0.2, out_dim)  # 设置好训练
+model.fit_generator(train_generator, steps_per_epoch=N_batches, epochs=N_epochs, verbose=1, callbacks=callbacks)  #开始训练

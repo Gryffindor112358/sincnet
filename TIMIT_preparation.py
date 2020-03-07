@@ -52,14 +52,14 @@ copy_folder(in_folder, out_folder)  # 将in_folder中的文件夹结构完全复
 # Speech Data Reverberation Loop
 for i in range(len(list_sig)):  # 循环对wav文件处理
     # Open the wav file
-    wav_file = in_folder + '/' + list_sig[i]
+    wav_file = in_folder + '/' + list_sig[i]  # 按照列表名单逐个读取wav音频信号
     [signal, fs] = sf.read(wav_file)
     signal = signal.astype(np.float64)
 
     # Signal normalization
     signal = signal / np.abs(np.max(signal))
 
-    # Read wrd file
+    # Read wrd file  wrd文件是TIMIT数据集中与wav文件对应的资料文件
     wrd_file = wav_file.replace(".wav", ".wrd")  # 读与wav文件对应的wrd文件
     wrd_sig = ReadList(wrd_file)
     beg_sig = int(wrd_sig[0].split(' ')[0])  # 第一行的第一个时间点（开始

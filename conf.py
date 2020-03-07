@@ -8,7 +8,7 @@ options = read_conf()
 tr_lst = options.tr_lst
 te_lst = options.te_lst
 pt_file = options.pt_file
-class_dict_file = options.lab_dict
+class_dict_file = options.lab_dict   # 这个文件是从data_io那边读过来的，在下面传给lab_dict
 data_folder = options.data_folder + '/'
 output_folder = options.output_folder
 
