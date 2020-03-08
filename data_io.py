@@ -28,7 +28,7 @@ def read_conf(cfg_file=None):
     Config.read(cfg_file)
 
     # [data]
-    options.tr_lst = Config.get('data', 'tr_lst')
+    options.tr_lst = Config.get('data', 'tr_lst')    # 根据SincNet_TIMIT.cfg文件中的参数（/地址）读取数据，第一个data是分区，第二个tr_lst是具体参数
     options.te_lst = Config.get('data', 'te_lst')
     options.lab_dict = Config.get('data', 'lab_dict')
     options.data_folder = Config.get('data', 'data_folder')
